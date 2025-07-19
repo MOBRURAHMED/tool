@@ -1,166 +1,94 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Compress multiple images online with preview and WebP support. Drag & drop support and fast download."/>
-  <meta name="keywords" content="multi image compressor, compress webp, image preview, online image tool, photo compression tool">
-  <meta name="author" content="Mobrur Ahmed" />
-  <title>Multi Image Compressor - WebP & JPEG</title>
+  <meta name="description" content="Compress and optimize your images online. Supports JPEG, PNG, and WebP with drag & drop, quality slider, and multi-image compression." />
+  <title>Free Online Image Compressor - WebP & JPEG</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-      text-align: center;
-    }
-    h1 { color: #4F46E5; }
-    .upload-area {
-      border: 2px dashed #ccc;
-      padding: 30px;
-      background: #fff;
-      margin: 20px auto;
-      border-radius: 10px;
-      max-width: 600px;
-    }
-    input[type="file"] {
-      display: none;
-    }
-    .image-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .preview-card {
-      background: white;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    canvas {
-      max-width: 150px;
-      height: auto;
-    }
-    button {
-      padding: 10px 20px;
-      background: #4F46E5;
-      color: white;
-      border: none;
-      margin: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    select {
-      padding: 8px;
-      margin: 10px;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; color: #333; }
+    header { background: #3b82f6; color: white; padding: 1.5rem; text-align: center; }
+    h1 { margin: 0 0 0.5rem 0; }
+    main { max-width: 1000px; margin: 2rem auto; padding: 1rem; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .drop-zone { border: 2px dashed #3b82f6; padding: 2rem; text-align: center; cursor: pointer; background: #e0f2fe; }
+    input[type="file"] { display: none; }
+    .slider { margin: 1.5rem 0; }
+    .preview-container { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+    .preview-box { flex: 1 1 300px; border: 1px solid #ccc; padding: 1rem; background: #fafafa; }
+    img { max-width: 100%; height: auto; }
+    footer { text-align: center; padding: 1rem; font-size: 0.9rem; color: #666; margin-top: 2rem; }
+    .adsense { margin: 2rem 0; text-align: center; }
   </style>
 </head>
 <body>
-
-<h1>🖼️ Multi Image Compressor (WebP + JPEG)</h1>
-
-<div class="upload-area" id="drop-area">
-  <p>Drag & Drop Images Here</p>
-  <p>or <label for="fileElem" style="color: #4F46E5; cursor: pointer;">browse</label></p>
-  <input type="file" id="fileElem" multiple accept="image/*">
-</div>
-
-<label>Compression Quality: <span id="qualityDisplay">80</span>%</label>
-<input type="range" id="qualityRange" min="10" max="100" value="80">
-
-<select id="formatSelect">
-  <option value="jpeg">JPEG</option>
-  <option value="webp">WebP</option>
-</select>
-
-<br>
-<button onclick="downloadAll()">Download All</button>
-
-<div class="image-preview" id="preview"></div>
-
-<script>
-  const dropArea = document.getElementById('drop-area');
-  const fileInput = document.getElementById('fileElem');
-  const previewContainer = document.getElementById('preview');
-  const qualityRange = document.getElementById('qualityRange');
-  const qualityDisplay = document.getElementById('qualityDisplay');
-  const formatSelect = document.getElementById('formatSelect');
-  let compressedImages = [];
-
-  qualityRange.addEventListener('input', () => {
-    qualityDisplay.textContent = qualityRange.value;
-  });
-
-  ['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, e => {
-      e.preventDefault();
-      dropArea.style.borderColor = '#4F46E5';
-    }, false);
-  });
-
-  ['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, e => {
-      e.preventDefault();
-      dropArea.style.borderColor = '#ccc';
-    }, false);
-  });
-
-  dropArea.addEventListener('drop', e => {
-    handleFiles(e.dataTransfer.files);
-  });
-
-  fileInput.addEventListener('change', () => {
-    handleFiles(fileInput.files);
-  });
-
-  function handleFiles(files) {
-    [...files].forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
-
-          const quality = parseInt(qualityRange.value) / 100;
-          const format = formatSelect.value;
-          const mimeType = format === 'webp' ? 'image/webp' : 'image/jpeg';
-
-          canvas.toBlob(blob => {
-            const url = URL.createObjectURL(blob);
-            compressedImages.push({ blob, name: file.name.split('.')[0] + '.' + format });
-            const imgElement = document.createElement('img');
-            imgElement.src = url;
-            imgElement.width = 150;
-
-            const div = document.createElement('div');
-            div.className = 'preview-card';
-            div.appendChild(imgElement);
-            previewContainer.appendChild(div);
-          }, mimeType, quality);
+  <header>
+    <h1>Image Compressor & Resizer</h1>
+    <p>Compress your images online with drag & drop. Save space. Fast & free.</p>
+  </header>
+  <main>
+    <label class="drop-zone" for="upload" onclick="document.getElementById('upload').click();">
+      📁 Click or drag & drop your images here
+    </label>
+    <input type="file" id="upload" accept="image/*" multiple onchange="handleFiles(this.files)" />
+    <div class="slider">
+      <label for="quality">Compression Quality: <span id="qualityValue">80</span>%</label><br/>
+      <input type="range" id="quality" min="10" max="100" value="80" oninput="updateQuality(this.value)" />
+    </div>
+    <div class="adsense">
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-YOUR-AD-CLIENT-ID"
+        data-ad-slot="YOUR-AD-SLOT-ID"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+    <div class="preview-container" id="preview"></div>
+  </main>
+  <footer>
+    &copy; 2025 Mobrur Ahmed | Built for all devices | <a href="https://github.com/YOUR-USERNAME/image-compressor">View Source</a>
+  </footer>
+  <script>
+    const preview = document.getElementById("preview");
+    const qualityDisplay = document.getElementById("qualityValue");
+    let quality = 80;
+    function updateQuality(val) {
+      quality = parseInt(val);
+      qualityDisplay.textContent = val;
+    }
+    function handleFiles(files) {
+      [...files].forEach(file => {
+        if (!file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = function () {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const beforeSize = (file.size / 1024).toFixed(1);
+            const webp = canvas.toDataURL("image/webp", quality / 100);
+            const afterSize = Math.round(webp.length / 1.37 / 1024);
+            const box = document.createElement("div");
+            box.className = "preview-box";
+            box.innerHTML = \`
+              <strong>\${file.name}</strong><br/>
+              <em>Original:</em> \${beforeSize} KB<br/>
+              <em>Compressed:</em> \${afterSize} KB<br/><br/>
+              <img src="\${webp}" alt="Compressed"/><br/><br/>
+              <a href="\${webp}" download="compressed-\${file.name.split('.')[0]}.webp">⬇ Download WebP</a>
+            \`;
+            preview.appendChild(box);
+          };
         };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function downloadAll() {
-    compressedImages.forEach(file => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(file.blob);
-      a.download = file.name;
-      a.click();
-    });
-  }
-</script>
-
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
 </body>
 </html>
